@@ -14,6 +14,7 @@ func main() {
 		port = "8080"
 	}
 
+	http.HandleFunc("/", handlers.JSONMiddleware(handlers.Root))
 	http.HandleFunc("/plants", handlers.JSONMiddleware(handlers.AllPlants))
 	http.HandleFunc("/animals", handlers.JSONMiddleware(handlers.AllAnimals))
 	http.HandleFunc("/colors", handlers.JSONMiddleware(handlers.AllColors))
