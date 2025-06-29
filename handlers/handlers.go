@@ -9,6 +9,13 @@ import (
 	"github.com/mioi/whimsy"
 )
 
+func JSONMiddleware(next http.HandlerFunc) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		next(w, r)
+	}
+}
+
 func AllPlants(w http.ResponseWriter, r *http.Request) {
 	plants := whimsy.Plants()
 	json.NewEncoder(w).Encode(map[string]interface{}{
