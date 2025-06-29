@@ -16,6 +16,25 @@ func JSONMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
+func Root(w http.ResponseWriter, r *http.Request) {
+	categories := whimsy.Categories()
+	categoryNames := make([]string, len(categories))
+	totalWords := 0
+
+	for i, cat := range categories {
+		categoryNames[i] = cat.Name
+		totalWords += len(cat.Words)
+	}
+
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":      "ok",
+		"name":        "whimsy-api",
+		"version":     "1.0.0",
+		"categories":  categoryNames,
+		"total_words": totalWords,
+	})
+}
+
 func AllPlants(w http.ResponseWriter, r *http.Request) {
 	plants := whimsy.Plants()
 	json.NewEncoder(w).Encode(map[string]interface{}{

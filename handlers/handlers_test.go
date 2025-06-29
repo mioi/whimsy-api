@@ -154,6 +154,45 @@ func TestRandomNames(t *testing.T) {
 	}
 }
 
+func TestRoot(t *testing.T) {
+	req := httptest.NewRequest("GET", "/", nil)
+	w := httptest.NewRecorder()
+
+	Root(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("expected status %d, got %d", http.StatusOK, w.Code)
+	}
+
+	var response map[string]interface{}
+	if err := json.Unmarshal(w.Body.Bytes(), &response); err != nil {
+		t.Fatalf("failed to unmarshal response: %v", err)
+	}
+
+	expectedFields := []string{"status", "name", "version", "categories", "total_words"}
+	for _, field := range expectedFields {
+		if _, ok := response[field]; !ok {
+			t.Errorf("response missing '%s' field", field)
+		}
+	}
+
+	if status, ok := response["status"].(string); !ok || status != "ok" {
+		t.Errorf("expected status 'ok', got %v", response["status"])
+	}
+
+	if name, ok := response["name"].(string); !ok || name != "whimsy-api" {
+		t.Errorf("expected name 'whimsy-api', got %v", response["name"])
+	}
+
+	if categories, ok := response["categories"].([]interface{}); !ok || len(categories) == 0 {
+		t.Error("expected categories array with items")
+	}
+
+	if totalWords, ok := response["total_words"].(float64); !ok || totalWords <= 0 {
+		t.Errorf("expected positive total_words, got %v", response["total_words"])
+	}
+}
+
 func TestHealth(t *testing.T) {
 	req := httptest.NewRequest("GET", "/health", nil)
 	w := httptest.NewRecorder()
